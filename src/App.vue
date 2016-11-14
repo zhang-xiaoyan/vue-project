@@ -8,19 +8,24 @@
               v-on:click="toggle(item)"
           >{{item.label}}</li>
       </ul>
+      <p>child tells me:{{ childWords }}</p>
+      <component-a msgfromfather="father message"></component-a>
   </div>
 </template>
 
 <script>
 import Store from "./store.js"
+import ComponentA from "./components/ComponentA.vue"
 export default {
   data:function () {
      return{
        title:"this is a todo list",
        items:Store.fetch(),
-       newItem:""
+       newItem:"",
+       childWords:""
      }
   },
+  components:{ComponentA},
   watch:{
     items:{
       handler:function (items) {
@@ -28,6 +33,11 @@ export default {
         Store.save(items)
       },
       deep:true
+    }
+  },
+  events:{
+    "child-tell-me-something":function (msg) {
+      this.childWords = msg;
     }
   },
   methods:{
@@ -41,6 +51,7 @@ export default {
         isFinished:false
       });
       this.newItem="";
+      this.$broadcast("onAddNew", this.items);
     }
   }
 }
