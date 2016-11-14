@@ -1,38 +1,55 @@
 <template>
   <div id="app">
-    <img class="logo" src="./assets/logo.png">
-    <hello></hello>
-    <p>
-      Welcome to your Vue.js app!
-    </p>
-    <p>
-      To get a better understanding of how this boilerplate works, check out
-      <a href="http://vuejs-templates.github.io/webpack" target="_blank">its documentation</a>.
-      It is also recommended to go through the docs for
-      <a href="http://webpack.github.io/" target="_blank">Webpack</a> and
-      <a href="http://vuejs.github.io/vue-loader/" target="_blank">vue-loader</a>.
-      If you have any issues with the setup, please file an issue at this boilerplate's
-      <a href="https://github.com/vuejs-templates/webpack" target="_blank">repository</a>.
-    </p>
-    <p>
-      You may also want to checkout
-      <a href="https://github.com/vuejs/vue-router/" target="_blank">vue-router</a> for routing and
-      <a href="https://github.com/vuejs/vuex/" target="_blank">vuex</a> for state management.
-    </p>
+      <h1 v-text="title"></h1>
+      <input v-model="newItem" v-on:keyup.enter="addNew"/>
+      <ul>
+          <li v-for="item in items"
+              v-bind:class="{finish: item.isFinished}"
+              v-on:click="toggle(item)"
+          >{{item.label}}</li>
+      </ul>
   </div>
 </template>
 
 <script>
-import Hello from './components/Hello'
-
+import Store from "./store.js"
 export default {
-  components: {
-    Hello
+  data:function () {
+     return{
+       title:"this is a todo list",
+       items:Store.fetch(),
+       newItem:""
+     }
+  },
+  watch:{
+    items:{
+      handler:function (items) {
+        //console.log(val, oldVal)
+        Store.save(items)
+      },
+      deep:true
+    }
+  },
+  methods:{
+    toggle:function (item) {
+      //console.log(item)
+      item.isFinished = !item.isFinished
+    },
+    addNew:function () {
+      this.items.push({
+        label:this.newItem,
+        isFinished:false
+      });
+      this.newItem="";
+    }
   }
 }
 </script>
 
 <style>
+.finish{
+   text-decoration: underline;
+}
 html {
   height: 100%;
 }
